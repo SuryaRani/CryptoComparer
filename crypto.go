@@ -6,48 +6,38 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 )
 
-type Orders []struct {
-	BaseSymbol  string `json:"baseSymbol"`
-	QuoteSymbol string `json:"quoteSymbol"`
-	OrderBooks  []struct {
-		Exchange  string `json:"exchange"`
-		OrderBook struct {
-			Asks []struct {
-				Price    string `json:"price"`
-				Quantity string `json:"quantity"`
-			} `json:"asks"`
-			Bids []struct {
-				Price    string `json:"price"`
-				Quantity string `json:"quantity"`
-			} `json:"bids"`
-		} `json:"orderBook"`
-	} `json:"orderBooks"`
+type Sells struct {
+	Sells []Sell `json:"bids"`
+}
+
+//struct to hold buys
+type Sell struct {
+	Price    float64 `json:"px"`
+	Quantity float64 `json:"qty"`
+	Number   int     `json:"num"`
+}
+
+type Buys struct {
+	Buys []Buy `json:"asks"`
+}
+
+//struct to hold sells
+type Buy struct {
+	Price    float64 `json:"px"`
+	Quantity float64 `json:"qty"`
+	Number   int     `json:"num"`
+}
+
+type Binance struct {
+	LastUpdateID int        `json:"lastUpdateId"`
+	Bids         [][]string `json:"bids"`
+	Asks         [][]string `json:"asks"`
 }
 
 func main() {
-	//key = cf6e7628-edb0-4a17-9ff8-3e77daadc266
-
-	/*resp, err := http.Get("https://api.blockchain.com/v3/exchange/l3/BTC-USD")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	body, _ := ioutil.ReadAll(resp.Body)
-
-
-
-	//bids and asks on blockhains website
-
-
-	/*fmt.Println("Size: " + strconv.Itoa(len(buys.Buys)))
-	fmt.Println("Buy price:", buys.Buys[0].Price)
-	fmt.Println("Buy price: ", buys.Buys[0].Quantity)
-	fmt.Println("Buy price: " + strconv.Itoa(buys.Buys[0].Number))
-	fmt.Println("SEll price:", sells.Sells[0].Price*/
-
-	//buy1, _ = strconv.ParseFloat(buyString1, 32)
-	//sell1, _ = strconv.ParseFloat(sellString1, 32)
 
 	http.HandleFunc("/", handler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
@@ -55,43 +45,90 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	resp, err := http.Get("https://dev-api.shrimpy.io/v1/orderbooks?exchange=bittrex&baseSymbol=BTC&quoteSymbol=USD&limit=10")
-
+	resp, err := http.Get("https://api.blockchain.com/v3/exchange/l3/BTC-USD")
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 	body, _ := ioutil.ReadAll(resp.Body)
 
-	var exchange1 Orders
+	var sells Sells
+	var buys Buys
 
-	/*var buy1 float32
-	var sell1 float32
-	var buy2 float32
-	var sell2 float32
-	*/
-	json.Unmarshal(body, &exchange1)
+	json.Unmarshal(body, &buys)
+	json.Unmarshal(body, &sells)
 
-	sb := string(body)
-	fmt.Println(sb)
+	blockhainBtcBuy := buys.Buys[0].Price
+	blockhainBtcSell := sells.Sells[0].Price
 
-	//this is because for some reason sometimes i dont get the asks or bids array to be filled
-	// so i have to do it in a while loop
-	for len(exchange1[0].OrderBooks[0].OrderBook.Asks) <= 0 || len(exchange1[0].OrderBooks[0].OrderBook.Bids) <= 0 {
+	fmt.Fprintf(w, "This is buy price from blockchain for bitcoin %f, and sell price %f\n", blockhainBtcBuy, blockhainBtcSell)
 
-		resp, err := http.Get("https://dev-api.shrimpy.io/v1/orderbooks?exchange=bittrex&baseSymbol=BTC&quoteSymbol=USD&limit=10")
+	resp, err = http.Get("https://api.blockchain.com/v3/exchange/l3/ETH-USD")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	body, _ = ioutil.ReadAll(resp.Body)
 
-		if err != nil {
-			log.Fatalln(err)
-		}
+	var sellsEth Sells
+	var buysEth Buys
 
-		body, _ = ioutil.ReadAll(resp.Body)
-		json.Unmarshal(body, &exchange1)
+	json.Unmarshal(body, &buysEth)
+	json.Unmarshal(body, &sellsEth)
 
+	blockchainEthBuy := buysEth.Buys[0].Price
+	blockchainEthSell := sellsEth.Sells[0].Price
+
+	fmt.Fprintf(w, "This is buy price from blockchain for bitcoin %f, and sell price %f\n", blockchainEthBuy, blockchainEthSell)
+
+	//getting bitcoin price from binance
+	resp, err = http.Get("https://api.binance.com/api/v3/depth?symbol=BTCUSDT")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	body, _ = ioutil.ReadAll(resp.Body)
+	var btcBinance Binance
+
+	json.Unmarshal(body, &btcBinance)
+
+	binanceBtcBuy, _ := strconv.ParseFloat(btcBinance.Asks[0][0], 64)
+	binanceBtcSell, _ := strconv.ParseFloat(btcBinance.Bids[0][0], 64)
+	fmt.Fprintf(w, "This is buy price from Binance for bitcoin %f, and sell price %f\n", binanceBtcBuy, binanceBtcSell)
+
+	//getting ethereum price from binance
+	resp, err = http.Get("https://api.binance.com/api/v3/depth?symbol=ETHUSDT")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	body, _ = ioutil.ReadAll(resp.Body)
+	var ethBinance Binance
+
+	json.Unmarshal(body, &ethBinance)
+
+	binanceEthBuy, _ := strconv.ParseFloat(ethBinance.Asks[0][0], 64)
+	binanceEthSell, _ := strconv.ParseFloat(ethBinance.Bids[0][0], 64)
+	fmt.Fprintf(w, "This is buy price from Binance for etheruem %f, and sell price %f\n", binanceEthBuy, binanceEthSell)
+
+	if blockhainBtcBuy < binanceBtcBuy {
+		fmt.Fprintf(w, "You should buy Bitcoin from Blockchain\n")
+	} else {
+		fmt.Fprintf(w, "You should buy Bitcoin from Binance\n")
 	}
 
-	buyString1 := exchange1[0].OrderBooks[0].OrderBook.Asks[0]
-	sellString1 := exchange1[0].OrderBooks[0].OrderBook.Bids[0]
+	if blockchainEthBuy < binanceEthBuy {
+		fmt.Fprintf(w, "You should buy Ethereum from Blockchain\n")
+	} else {
+		fmt.Fprintf(w, "You should buy Ethereum from Binance\n")
+	}
 
-	fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
+	if blockhainBtcSell > binanceBtcSell {
+		fmt.Fprintf(w, "You should sell Bitcoin on Blockchain\n")
+	} else {
+		fmt.Fprintf(w, "You should sell Bitcoin on Binance\n")
+	}
+
+	if blockchainEthSell > binanceEthSell {
+		fmt.Fprintf(w, "You should sell Ethereum on Blockchain\n")
+	} else {
+		fmt.Fprintf(w, "You should sell Ethereum on Binance\n")
+	}
+
 }
