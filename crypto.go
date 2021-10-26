@@ -6,27 +6,24 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strconv"
 )
 
-type Buys struct {
-	Buys []Buy `json:"bids"`
-}
-
-//struct to hold buys
-type Buy struct {
-	Price    float32 `json:"price"`
-	Quantity float32 `json:"quantity"`
-}
-
-type Sells struct {
-	Sells []Sell `json:"asks"`
-}
-
-//struct to hold sells
-type Sell struct {
-	Price    float32 `json:"price"`
-	Quantity float32 `json:"quantity"`
+type Orders []struct {
+	BaseSymbol  string `json:"baseSymbol"`
+	QuoteSymbol string `json:"quoteSymbol"`
+	OrderBooks  []struct {
+		Exchange  string `json:"exchange"`
+		OrderBook struct {
+			Asks []struct {
+				Price    string `json:"price"`
+				Quantity string `json:"quantity"`
+			} `json:"asks"`
+			Bids []struct {
+				Price    string `json:"price"`
+				Quantity string `json:"quantity"`
+			} `json:"bids"`
+		} `json:"orderBook"`
+	} `json:"orderBooks"`
 }
 
 func main() {
@@ -43,26 +40,58 @@ func main() {
 	//bids and asks on blockhains website
 
 
-	fmt.Println("Size: " + strconv.Itoa(len(buys.Buys)))
+	/*fmt.Println("Size: " + strconv.Itoa(len(buys.Buys)))
 	fmt.Println("Buy price:", buys.Buys[0].Price)
 	fmt.Println("Buy price: ", buys.Buys[0].Quantity)
 	fmt.Println("Buy price: " + strconv.Itoa(buys.Buys[0].Number))
-	fmt.Println("SEll price:", sells.Sells[0].Price)*/
+	fmt.Println("SEll price:", sells.Sells[0].Price*/
 
-	var sells Sells
-	var buys Buys
+	//buy1, _ = strconv.ParseFloat(buyString1, 32)
+	//sell1, _ = strconv.ParseFloat(sellString1, 32)
 
-	resp, err := http.Get("https://dev-api.shrimpy.io/v1/orderbooks?exchange=bittrex&baseSymbol=BTC&limit=10")
+	http.HandleFunc("/", handler)
+	log.Fatal(http.ListenAndServe(":8080", nil))
+
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	resp, err := http.Get("https://dev-api.shrimpy.io/v1/orderbooks?exchange=bittrex&baseSymbol=BTC&quoteSymbol=USD&limit=10")
 
 	if err != nil {
 		log.Fatalln(err)
 	}
+
 	body, _ := ioutil.ReadAll(resp.Body)
 
-	json.Unmarshal(body, &buys)
-	json.Unmarshal(body, &sells)
+	var exchange1 Orders
 
-	fmt.Println("Size: " + strconv.Itoa(len(buys.Buys)))
-	fmt.Println("Buy price:", buys.Buys[0].Price)
+	/*var buy1 float32
+	var sell1 float32
+	var buy2 float32
+	var sell2 float32
+	*/
+	json.Unmarshal(body, &exchange1)
 
+	sb := string(body)
+	fmt.Println(sb)
+
+	//this is because for some reason sometimes i dont get the asks or bids array to be filled
+	// so i have to do it in a while loop
+	for len(exchange1[0].OrderBooks[0].OrderBook.Asks) <= 0 || len(exchange1[0].OrderBooks[0].OrderBook.Bids) <= 0 {
+
+		resp, err := http.Get("https://dev-api.shrimpy.io/v1/orderbooks?exchange=bittrex&baseSymbol=BTC&quoteSymbol=USD&limit=10")
+
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		body, _ = ioutil.ReadAll(resp.Body)
+		json.Unmarshal(body, &exchange1)
+
+	}
+
+	buyString1 := exchange1[0].OrderBooks[0].OrderBook.Asks[0]
+	sellString1 := exchange1[0].OrderBooks[0].OrderBook.Bids[0]
+
+	fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
 }
