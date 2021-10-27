@@ -38,14 +38,18 @@ type Binance struct {
 }
 
 type Format struct {
-	Btc1     float64
-	Btc2     float64
-	BtcSell1 float64
-	BtcSell2 float64
-	Eth1     float64
-	Eth2     float64
-	EthSell1 float64
-	EthSell2 float64
+	Btc1          float64
+	Btc2          float64
+	BtcSell1      float64
+	BtcSell2      float64
+	Eth1          float64
+	Eth2          float64
+	EthSell1      float64
+	EthSell2      float64
+	WinnerBtcBuy  string
+	WinnerBtcSell string
+	WinnerEthBuy  string
+	WinnerEthSell string
 }
 
 func main() {
@@ -118,29 +122,34 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	binanceEthBuy, _ := strconv.ParseFloat(ethBinance.Asks[0][0], 64)
 	binanceEthSell, _ := strconv.ParseFloat(ethBinance.Bids[0][0], 64)
 	//fmt.Fprintf(w, "This is buy price from Binance for etheruem %f, and sell price %f\n", binanceEthBuy, binanceEthSell)
+	winnerBtcBuy := "Unkown"
+	winnerBtcSell := "Unkown"
+	winnerEthBuy := "Unkown"
+	winnerEthSell := "Unkown"
 
 	if blockhainBtcBuy < binanceBtcBuy {
-		//fmt.Fprintf(w, "You should buy Bitcoin from Blockchain\n")
+		winnerBtcBuy = "Blockchain"
+
 	} else {
-		//fmt.Fprintf(w, "You should buy Bitcoin from Binance\n")
+		winnerBtcBuy = "Binance"
 	}
 
 	if blockchainEthBuy < binanceEthBuy {
-		//fmt.Fprintf(w, "You should buy Ethereum from Blockchain\n")
+		winnerEthBuy = "Blockchain"
 	} else {
-		//fmt.Fprintf(w, "You should buy Ethereum from Binance\n")
+		winnerEthBuy = "Binance"
 	}
 
 	if blockhainBtcSell > binanceBtcSell {
-		//fmt.Fprintf(w, "You should sell Bitcoin on Blockchain\n")
+		winnerBtcSell = "Blockchain"
 	} else {
-		//fmt.Fprintf(w, "You should sell Bitcoin on Binance\n")
+		winnerBtcSell = "Binance"
 	}
 
 	if blockchainEthSell > binanceEthSell {
-		//fmt.Fprintf(w, "You should sell Ethereum on Blockchain\n")
+		winnerEthSell = "Blockchain"
 	} else {
-		//fmt.Fprintf(w, "You should sell Ethereum on Binance\n")
+		winnerEthSell = "Binance"
 	}
 
 	templ, err := template.ParseFiles("index.html")
@@ -148,14 +157,18 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 	data := Format{
-		Btc1:     blockhainBtcBuy,
-		Btc2:     binanceBtcBuy,
-		BtcSell1: blockhainBtcSell,
-		BtcSell2: binanceBtcSell,
-		Eth1:     blockchainEthBuy,
-		Eth2:     binanceEthBuy,
-		EthSell1: blockchainEthSell,
-		EthSell2: binanceEthSell,
+		Btc1:          blockhainBtcBuy,
+		Btc2:          binanceBtcBuy,
+		BtcSell1:      blockhainBtcSell,
+		BtcSell2:      binanceBtcSell,
+		Eth1:          blockchainEthBuy,
+		Eth2:          binanceEthBuy,
+		EthSell1:      blockchainEthSell,
+		EthSell2:      binanceEthSell,
+		WinnerBtcBuy:  winnerBtcBuy,
+		WinnerBtcSell: winnerBtcSell,
+		WinnerEthBuy:  winnerEthBuy,
+		WinnerEthSell: winnerEthSell,
 	}
 	templ.Execute(w, data)
 
