@@ -1,1 +1,1 @@
-go run crypto.go
+web: bin/crypto
