@@ -125,7 +125,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	binanceEthBuy, _ := strconv.ParseFloat(ethBinance.Asks[0][0], 64)
 	binanceEthSell, _ := strconv.ParseFloat(ethBinance.Bids[0][0], 64)
-	//fmt.Fprintf(w, "This is buy price from Binance for etheruem %f, and sell price %f\n", binanceEthBuy, binanceEthSell)
+
 	winnerBtcBuy := "Unkown"
 	winnerBtcSell := "Unkown"
 	winnerEthBuy := "Unkown"
