@@ -46,13 +46,14 @@
         <h1 class="visually-hidden">Bitcoin Buy Prices</h1>
 
         <div class="px-4 py-5 my-5 text-center">
-            <img class="d-block mx-auto mb-4" src="assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
+            <img class="d-block mx-auto mb-4" src="binance.png" alt="" width="72" height="57">
             <h1 class="display-5 fw-bold">BUY Bitcoin</h1>
             <div class="col-lg-6 mx-auto">
                 <p class="lead mb-4">Price to BUY Bitcoin from Blockchain: {{.Btc1}}</p>
                 <p class="lead mb-4"> Price to BUY Bitcoin from Binance: {{.Btc2}}</p>
                 <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                    <button type="button" class="btn btn-primary btn-lg px-4 gap-3">BUY Bitcoin from
+                    <button type="button" onclick="window.location.href={{.WinnerBtcBuyUrl}};"
+                        class="btn btn-primary btn-lg px-4 gap-3">BUY Bitcoin from
                         {{.WinnerBtcBuy}}</button>
                 </div>
             </div>
@@ -63,13 +64,14 @@
         <h1 class="visually-hidden">Bitcoin Sell Prices</h1>
 
         <div class="px-4 py-5 my-5 text-center">
-            <img class="d-block mx-auto mb-4" src="assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
+            <img class="d-block mx-auto mb-4" src="binance.png" alt="" width="72" height="57">
             <h1 class="display-5 fw-bold">SELL Bitcoin</h1>
             <div class="col-lg-6 mx-auto">
                 <p class="lead mb-4">Price to SELL Bitcoin from Blockchain: {{.BtcSell1}}</p>
                 <p class="lead mb-4"> Price to SELL Bitcoin from Binance: {{.BtcSell2}}</p>
                 <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                    <button type="button" class="btn btn-primary btn-lg px-4 gap-3">SELL Bitcoin from
+                    <button type="button" onclick="window.location.href={{.WinnerBtcSellUrl}};"
+                        class="btn btn-primary btn-lg px-4 gap-3">SELL Bitcoin on
                         {{.WinnerBtcSell}}</button>
                 </div>
             </div>
@@ -80,13 +82,14 @@
         <h1 class="visually-hidden">Ethereum Buy Prices</h1>
 
         <div class="px-4 py-5 my-5 text-center">
-            <img class="d-block mx-auto mb-4" src="assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
+            <img class="d-block mx-auto mb-4" src="binance.png" alt="" width="72" height="57">
             <h1 class="display-5 fw-bold">BUY Ethereum</h1>
             <div class="col-lg-6 mx-auto">
                 <p class="lead mb-4">Price to BUY Ethereum from Blockchain: {{.Eth1}}</p>
                 <p class="lead mb-4"> Price to BUY Ethereum from Binance: {{.Eth2}}</p>
                 <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                    <button type="button" class="btn btn-primary btn-lg px-4 gap-3">BUY Ethereum from
+                    <button type="button" onclick="window.location.href={{.WinnerEthBuyUrl}};"
+                        class="btn btn-primary btn-lg px-4 gap-3">BUY Ethereum from
                         {{.WinnerEthBuy}}</button>
                 </div>
             </div>
@@ -97,13 +100,14 @@
         <h1 class="visually-hidden">Ethereum Sell Prices</h1>
 
         <div class="px-4 py-5 my-5 text-center">
-            <img class="d-block mx-auto mb-4" src="assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
+            <img class="d-block mx-auto mb-4" src="binance.png" alt="" width="72" height="57">
             <h1 class="display-5 fw-bold">SELL Ethereum</h1>
             <div class="col-lg-6 mx-auto">
                 <p class="lead mb-4">Price to SELL Ethereum from Blockchain: {{.EthSell1}}</p>
-                <p class="lead mb-4"> Price to SELL Ethereum from Binance: {{.EthSEll2}}</p>
+                <p class="lead mb-4"> Price to SELL Ethereum from Binance: {{.EthSell2}}</p>
                 <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                    <button type="button" class="btn btn-primary btn-lg px-4 gap-3">SELL Ethereum from
+                    <button type="button" onclick="window.location.href={{.WinnerEthSellUrl}};"
+                        class="btn btn-primary btn-lg px-4 gap-3">SELL Ethereum on
                         {{.WinnerEthSell}}</button>
                 </div>
             </div>

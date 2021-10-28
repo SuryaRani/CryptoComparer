@@ -38,18 +38,22 @@ type Binance struct {
 }
 
 type Format struct {
-	Btc1          float64
-	Btc2          float64
-	BtcSell1      float64
-	BtcSell2      float64
-	Eth1          float64
-	Eth2          float64
-	EthSell1      float64
-	EthSell2      float64
-	WinnerBtcBuy  string
-	WinnerBtcSell string
-	WinnerEthBuy  string
-	WinnerEthSell string
+	Btc1             float64
+	Btc2             float64
+	BtcSell1         float64
+	BtcSell2         float64
+	Eth1             float64
+	Eth2             float64
+	EthSell1         float64
+	EthSell2         float64
+	WinnerBtcBuy     string
+	WinnerBtcSell    string
+	WinnerEthBuy     string
+	WinnerEthSell    string
+	WinnerBtcBuyUrl  string
+	WinnerBtcSellUrl string
+	WinnerEthBuyUrl  string
+	WinnerEthSellUrl string
 }
 
 func main() {
@@ -126,30 +130,42 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	winnerBtcSell := "Unkown"
 	winnerEthBuy := "Unkown"
 	winnerEthSell := "Unkown"
+	winnerBtcBuyUrl := "Unknown"
+	winnerEthBuyUrl := "Unknown"
+	winnerBtcSellUrl := "Unknown"
+	winnerEthSellUrl := "Unknown"
 
 	if blockhainBtcBuy < binanceBtcBuy {
 		winnerBtcBuy = "Blockchain"
+		winnerBtcBuyUrl = "https://exchange.blockchain.com/trade/BTC-USD"
 
 	} else {
 		winnerBtcBuy = "Binance"
+		winnerBtcBuyUrl = "https://www.binance.com/en/buy-sell-crypto"
 	}
 
 	if blockchainEthBuy < binanceEthBuy {
 		winnerEthBuy = "Blockchain"
+		winnerEthBuyUrl = "https://exchange.blockchain.com/trade/ETH-USD"
 	} else {
 		winnerEthBuy = "Binance"
+		winnerEthBuyUrl = "https://www.binance.com/en/buy-sell-crypto"
 	}
 
 	if blockhainBtcSell > binanceBtcSell {
 		winnerBtcSell = "Blockchain"
+		winnerBtcSellUrl = "https://exchange.blockchain.com/trade/BTC-USD"
 	} else {
 		winnerBtcSell = "Binance"
+		winnerBtcSellUrl = "https://www.binance.com/en/buy-sell-crypto?type=SELL"
 	}
 
 	if blockchainEthSell > binanceEthSell {
 		winnerEthSell = "Blockchain"
+		winnerEthSellUrl = "https://exchange.blockchain.com/trade/ETH-USD"
 	} else {
 		winnerEthSell = "Binance"
+		winnerEthSellUrl = "https://www.binance.com/en/buy-sell-crypto?type=SELL"
 	}
 
 	templ, err := template.ParseFiles("index.html")
@@ -157,18 +173,22 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 	data := Format{
-		Btc1:          blockhainBtcBuy,
-		Btc2:          binanceBtcBuy,
-		BtcSell1:      blockhainBtcSell,
-		BtcSell2:      binanceBtcSell,
-		Eth1:          blockchainEthBuy,
-		Eth2:          binanceEthBuy,
-		EthSell1:      blockchainEthSell,
-		EthSell2:      binanceEthSell,
-		WinnerBtcBuy:  winnerBtcBuy,
-		WinnerBtcSell: winnerBtcSell,
-		WinnerEthBuy:  winnerEthBuy,
-		WinnerEthSell: winnerEthSell,
+		Btc1:             blockhainBtcBuy,
+		Btc2:             binanceBtcBuy,
+		BtcSell1:         blockhainBtcSell,
+		BtcSell2:         binanceBtcSell,
+		Eth1:             blockchainEthBuy,
+		Eth2:             binanceEthBuy,
+		EthSell1:         blockchainEthSell,
+		EthSell2:         binanceEthSell,
+		WinnerBtcBuy:     winnerBtcBuy,
+		WinnerBtcSell:    winnerBtcSell,
+		WinnerEthBuy:     winnerEthBuy,
+		WinnerEthSell:    winnerEthSell,
+		WinnerBtcBuyUrl:  winnerBtcBuyUrl,
+		WinnerBtcSellUrl: winnerBtcSellUrl,
+		WinnerEthBuyUrl:  winnerEthBuyUrl,
+		WinnerEthSellUrl: winnerEthSellUrl,
 	}
 	templ.Execute(w, data)
 
