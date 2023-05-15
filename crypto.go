@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	
-	"github.com/gofiber/fiber/v2"
 )
 
 type Sells struct {
