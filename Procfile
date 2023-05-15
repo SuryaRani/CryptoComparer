@@ -1,1 +1,1 @@
-web: bin/crypto
+go build crypto.go
